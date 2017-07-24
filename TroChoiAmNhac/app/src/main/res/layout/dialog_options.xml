@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/boder_dialog">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="@dimen/dimen20"
+        android:src="@drawable/setting"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_margin="@dimen/dimen10"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đánh giá"
+            android:layout_weight="0.5"
+            android:textSize="25sp"
+            android:layout_marginRight="@dimen/dimen5"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/background_hint"
+            android:id="@+id/btn_rate"/>
+        <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:background="@drawable/background_hint" android:textColor="@color/white"
+        android:id="@+id/btn_Logout"
+        android:layout_marginLeft="@dimen/dimen5"
+        android:text="Đăng xuất"/>
+    </LinearLayout>
+
+
+</LinearLayout>

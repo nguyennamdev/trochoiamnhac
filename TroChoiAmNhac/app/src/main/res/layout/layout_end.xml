@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/boder_dialog"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/imageViewResult"
+        android:layout_margin="@dimen/dimen10"
+        android:scaleType="fitCenter"
+        />
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen5"
+            android:layout_marginLeft="@dimen/dimen35"
+            android:layout_marginRight="@dimen/dimen35"
+            android:background="@drawable/boder_button_answer"
+            >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/anonymous"
+            android:id="@+id/img_avatar_result"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/dimen25"
+             />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen20"
+            android:textStyle="bold"
+            android:text="Điểm"
+            android:textColor="@color/yellow_500"
+            android:id="@+id/titleScore"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dimen25"
+            android:layout_marginTop="@dimen/dimen10"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/dimen50"
+            android:textColor="@color/green"
+            android:layout_below="@id/titleScore"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dimen20"
+            android:id="@+id/txt_scoreCurrent"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title_highScore"
+            android:text="Kỷ lục"
+            android:textStyle="bold"
+            android:textColor="@color/yellow_500"
+            android:textSize="@dimen/dimen20"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/dimen5"
+            android:layout_marginRight="@dimen/dimen25"
+            android:layout_below="@id/txt_scoreCurrent"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_highScore"
+            android:textSize="@dimen/dimen50"
+            android:textColor="@color/green"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dimen20"
+            android:id="@+id/txt_highScore"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/dimen5"/>
+
+         </RelativeLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/dimen20"
+            android:layout_marginBottom="@dimen/dimen20"
+            >
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/share2"
+                android:id="@+id/btn_share"
+                android:layout_marginRight="@dimen/dimen10"/>
+            <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/replay2"
+                android:id="@+id/btn_replay"/>
+            <ImageButton
+                android:layout_width="@dimen/dimen50"
+                android:layout_height="@dimen/dimen50"
+                android:background="@drawable/home2"
+                android:layout_marginLeft="@dimen/dimen10"
+                android:id="@+id/btn_home"
+                />
+        </LinearLayout>
+
+</LinearLayout>

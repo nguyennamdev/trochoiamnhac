@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "889461443705",
+    "firebase_url": "https://trochoiamnhac-b9165.firebaseio.com",
+    "project_id": "trochoiamnhac-b9165",
+    "storage_bucket": "trochoiamnhac-b9165.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889461443705:android:df4d5bfdf2062eaa",
+        "android_client_info": {
+          "package_name": "com.wordpress.nguyenvannamdev.trochoiamnhac"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889461443705-q39tmdpatursvuh8jm3nbqrd62p5i5pe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wordpress.nguyenvannamdev.trochoiamnhac",
+            "certificate_hash": "87FAD486939766FB95374FF3478FE679C33FB290"
+          }
+        },
+        {
+          "client_id": "889461443705-22n6tdtsnp9bqm721l1ihpd2lajus7lu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT5_57Qvuu-qIqVTf0bTeHdrM8br_nTU8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889461443705-22n6tdtsnp9bqm721l1ihpd2lajus7lu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

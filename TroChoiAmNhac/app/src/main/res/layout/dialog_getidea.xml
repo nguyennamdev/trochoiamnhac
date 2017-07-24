@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/boder_dialog"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="@dimen/dimen10"
+        android:layout_marginRight="@dimen/dimen10"
+        android:layout_marginLeft="@dimen/dimen10"
+        android:src="@drawable/notification"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dimen10"
+        android:layout_marginLeft="@dimen/dimen10"
+        android:layout_gravity="center_horizontal"
+        android:textSize="25sp"
+        android:textColor="#F9ED3A"
+        android:textAlignment="center"
+        android:text="Bạn có thể nhấn quảng cáo để tăng số lần gợi ý ?"
+        android:id="@+id/textView" />
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/dimen25"
+        android:layout_marginBottom="@dimen/dimen20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đồng ý"
+            android:id="@+id/btn_clickAdmob"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginLeft="@dimen/dimen10"
+            android:layout_marginRight="@dimen/dimen5"
+            android:background="@drawable/background_hint"
+            android:layout_weight="1"
+            android:textSize="25sp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_cancel"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/background_hint"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/dimen5"
+            android:layout_marginRight="@dimen/dimen10"
+            android:text="Hủy"/>
+    </LinearLayout>
+</LinearLayout>

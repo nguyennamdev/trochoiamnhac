@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:background="@color/red_300"
+    android:layout_height="match_parent"
+    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen65"
+        android:id="@+id/bar_info"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/dimen10"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginRight="5dp"
+            android:gravity="center"
+            android:background="@drawable/boder_button_answer"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:id="@+id/face_name"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginLeft="@dimen/dimen5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@drawable/boder_button_answer"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:id="@+id/txt_score"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_height="@dimen/dimen80"
+        android:layout_width="@dimen/dimen80"
+        android:id="@+id/Avatar"
+        android:src="@drawable/anonymous"
+        android:layout_marginTop="@dimen/dimen15"
+        android:layout_below="@+id/bar_info"
+        android:layout_centerHorizontal="true" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/ad_unit_banner" />
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/play_button"
+        android:id="@+id/button_play"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:id="@+id/imageButton_US_UK"
+        android:layout_below="@+id/imageButton_VN"
+        android:layout_alignRight="@+id/imageButton_VN"
+        android:layout_alignEnd="@+id/imageButton_VN"
+        android:visibility="invisible"
+        android:textSize="25sp"
+        android:layout_marginTop="@dimen/dimen5"
+        android:background="@drawable/boder_button_answer"
+        android:layout_toRightOf="@+id/button_play"
+        android:text="US-UK"
+        android:layout_toEndOf="@+id/button_play" />
+
+    <Button
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:id="@+id/imageButton_VN"
+        android:textSize="25sp"
+        android:layout_alignTop="@+id/button_play"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/boder_button_answer"
+        android:layout_alignRight="@+id/bar_info"
+        android:text="Việt Nam"
+        android:layout_alignEnd="@+id/bar_info"
+        android:visibility="invisible"
+        android:layout_toRightOf="@+id/button_play"
+        android:layout_toEndOf="@+id/button_play" />
+
+
+
+    <Button
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:background="@drawable/idea2"
+        android:id="@+id/btn_addIdea"
+        android:textSize="25sp"
+        android:layout_below="@+id/button_play"
+        android:layout_toLeftOf="@+id/Avatar"
+        android:layout_toStartOf="@+id/Avatar"
+        android:layout_marginTop="20dp"/>
+
+    <ImageButton
+        android:layout_width="@dimen/dimen70"
+        android:layout_height="@dimen/dimen70"
+        android:background="@drawable/settings"
+        android:layout_alignTop="@+id/btn_addIdea"
+        android:layout_toRightOf="@+id/Avatar"
+        android:layout_toEndOf="@+id/Avatar"
+        android:id="@+id/btn_option"
+        android:layout_marginTop="@dimen/dimen5"/>
+
+
+</RelativeLayout>

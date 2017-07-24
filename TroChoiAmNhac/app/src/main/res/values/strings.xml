@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Trò Chơi Âm Nhạc</string>
+    <string name="facebook_app_id">360033147685384</string>
+    <string name="fb_login_protocol_scheme">fbAPP_ID</string>
+    <string name="path">gs://trochoiamnhac-b9165.appspot.com/audio/</string>
+    <string name="ad_unit_banner">ca-app-pub-8486025614150503/5241399273</string>
+    <string name="ad_unit_full">ca-app-pub-8486025614150503/9252796475</string>
+
+
+</resources>
