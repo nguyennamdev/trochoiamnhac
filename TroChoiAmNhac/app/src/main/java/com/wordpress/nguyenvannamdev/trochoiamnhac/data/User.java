@@ -1,4 +1,4 @@
-package com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService;
+package com.wordpress.nguyenvannamdev.trochoiamnhac.data;
 
 /**
  * Created by NAM COI on 2/25/2017.

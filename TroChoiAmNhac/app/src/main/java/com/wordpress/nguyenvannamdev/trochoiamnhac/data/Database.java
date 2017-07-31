@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.User;
-
 /**
  * Created by NAM COI on 2/25/2017.
  */
