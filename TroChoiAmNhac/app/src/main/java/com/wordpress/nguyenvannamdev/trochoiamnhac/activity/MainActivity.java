@@ -1,4 +1,4 @@
-package com.wordpress.nguyenvannamdev.trochoiamnhac;
+package com.wordpress.nguyenvannamdev.trochoiamnhac.activity;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -36,8 +36,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-import com.wordpress.nguyenvannamdev.trochoiamnhac.Data.User;
-import com.wordpress.nguyenvannamdev.trochoiamnhac.dal.Database;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.CheckInternet;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.User;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.R;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Database;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {

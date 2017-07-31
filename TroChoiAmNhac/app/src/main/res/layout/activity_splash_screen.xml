@@ -4,7 +4,7 @@
     android:id="@+id/activity_splash_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.SplashScreen">
+    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.activity.SplashScreen">
 
     <com.felipecsl.gifimageview.library.GifImageView
         android:layout_width="fill_parent"

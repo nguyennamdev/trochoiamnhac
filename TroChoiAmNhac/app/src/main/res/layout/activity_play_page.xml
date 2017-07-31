@@ -4,7 +4,7 @@
     android:id="@+id/activity_play_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.PlayPage"
+    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.activity.PlayPage"
     >
         <TextView
             android:layout_width="wrap_content"

@@ -25,7 +25,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/blue_200" />
 
-        <activity android:name=".SplashScreen">
+        <activity android:name=".activity.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +36,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".activity.MainActivity"></activity>
 
         <service
             android:name=".MyFirebaseMessagingService"
@@ -53,9 +53,9 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".LoginAcitivity" />
-        <activity android:name=".PlayPage" />
-        <activity android:name=".FullAdsActivity" />
+        <activity android:name=".activity.LoginAcitivity" />
+        <activity android:name=".activity.PlayPage" />
+        <activity android:name=".activity.FullAdsActivity" />
 
     </application>
 

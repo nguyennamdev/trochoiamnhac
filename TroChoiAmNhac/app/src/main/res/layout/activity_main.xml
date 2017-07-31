@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="@color/red_300"
     android:layout_height="match_parent"
-    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.MainActivity">
+    tools:context="com.wordpress.nguyenvannamdev.trochoiamnhac.activity.MainActivity">
 
 
     <LinearLayout
