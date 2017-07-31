@@ -18,9 +18,6 @@ public class CheckInternet {
         context = ctx.getApplicationContext();
         return instance;
     }
-
-
-
     public boolean isConnected() {
        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Service.CONNECTIVITY_SERVICE);
         if(connectivityManager  != null){
