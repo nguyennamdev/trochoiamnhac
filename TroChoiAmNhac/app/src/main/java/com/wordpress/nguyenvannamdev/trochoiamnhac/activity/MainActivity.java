@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.login.LoginManager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -39,28 +40,23 @@ import com.squareup.picasso.Picasso;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.CheckInternet;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.User;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.R;
-import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Database;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.data.UserSQLiteHelper;
+
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btn_USUK;
-    private Button btn_VN;
-    private Button btn_play;
-    private TextView txt_name;
-    private TextView txt_score;
+    private Button btn_USUK, btn_VN, btn_play, btn_addIdea;
+    private TextView txt_name, txt_score;
     private ImageView image_avatar;
     private AdView adBanner;
     private AdRequest adRequest;
-    private Button btn_addIdea;
-    private Database myDatabase;
-    private int hint = 1;
-    private int score = 0;
+    private UserSQLiteHelper myUserSQLiteHelper;
+    private int hint = 1, score = 0;
     private User user1;
     private ImageButton btn_option;
-    private int question_length_USUK;
-    private int question_length_VietNam;
-    int length;
+    private int question_length_USUK, question_length_VietNam;
+    private int numberOfAllQuestion;
     private DatabaseReference mData;
     private ProgressDialog progressDialog;
     private MediaPlayer mediaPlayer;
@@ -70,9 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private static final long mBackPressThreshold = 3500;
     private CheckInternet checkInternet;
     private InterstitialAd mInterstitialAd;
-    FirebaseUser user;
-    private Animation animationZoom;
-    private Animation animationClockwise;
+    private FirebaseUser user;
+    private Animation animationZoom, animationClockwise;
 
 
     @Override
@@ -80,11 +75,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTheme(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         setContentView(R.layout.activity_main);
+
+        // references
+        init();
+        // get length of question on firebase
+        getLengthOfQuestion();
+        // init admob
+        initAdmobBanner();
+        setAdRequest();
+        // check user
+        checkUser();
+        // show dialog options
+        showDialogOption();
+        clickBtn_play();
+        // add hint
+        showDialogAddHint();
+
+        pressBackToast = Toast.makeText(getApplicationContext(), "press_back_again_to_exit",
+                Toast.LENGTH_SHORT);
+    }
+
+    private void init() {
         image_avatar = (ImageView) findViewById(R.id.Avatar);
         txt_name = (TextView) findViewById(R.id.face_name);
         btn_addIdea = (Button) findViewById(R.id.btn_addIdea);
         txt_score = (TextView) findViewById(R.id.txt_score);
-        myDatabase = new Database(this);
+        myUserSQLiteHelper = new UserSQLiteHelper(this);
         checkInternet = CheckInternet.getInstance(this);
         mediaPlayer = MediaPlayer.create(this, R.raw.highscoreteminitepandaeyes);
         mediaPlayer.start();
@@ -93,20 +109,21 @@ public class MainActivity extends AppCompatActivity {
         btn_option = (ImageButton) findViewById(R.id.btn_option);
         mData = FirebaseDatabase.getInstance().getReference();
         progressDialog = new ProgressDialog(this);
-        animationZoom = AnimationUtils.loadAnimation(this,R.anim.anim_zoom);
+        animationZoom = AnimationUtils.loadAnimation(this, R.anim.anim_zoom);
+    }
 
-
+    private void getLengthOfQuestion() {
         mData.child("QuestionLength").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 GenericTypeIndicator<HashMap<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<HashMap<String, Integer>>() {
                 };
                 HashMap<String, Integer> question_length = dataSnapshot.getValue(genericTypeIndicator);
-                length = question_length_USUK = question_length.get("US-UK");
+                numberOfAllQuestion = question_length_USUK = question_length.get("US-UK");
                 question_length_VietNam = question_length.get("VietNam");
                 Log.d("lee", String.valueOf(question_length_VietNam));
                 Log.d("ll", String.valueOf(question_length_USUK));
-                Toast.makeText(getApplicationContext(),"Tải xong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Tải xong", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -114,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void initAdmobBanner() {
         MobileAds.initialize(this, "ca-app-pub-8486025614150503~8511203671");
         registerReceiver(broadcastReceiver, new IntentFilter("INTERNET_LOST"));
         mInterstitialAd = new InterstitialAd(this);
@@ -145,10 +165,12 @@ public class MainActivity extends AppCompatActivity {
                 super.onAdLoaded();
             }
         });
+    }
+
+    private void setAdRequest() {
         adRequest = new AdRequest.Builder().build();
         adBanner.loadAd(adRequest);
         mInterstitialAd.loadAd(adRequest);
-
         adBanner.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
@@ -157,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 user1.setHigh_score(Integer.parseInt(String.valueOf(txt_score.getText())));
                 hint += 1;
                 user1.setHint(hint);
-                myDatabase.updateData(user1);
+                myUserSQLiteHelper.updateData(user1);
                 Toast.makeText(getApplicationContext(), "Bạn đã được thêm 1 lần gợi ý", Toast.LENGTH_LONG).show();
             }
 
@@ -173,16 +195,19 @@ public class MainActivity extends AppCompatActivity {
                 super.onAdFailedToLoad(i);
             }
         });
+    }
+
+    private void checkUser() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
             txt_name.setText(name);
             uriUser = user.getPhotoUrl();
             Picasso.with(this).load(uriUser).fit().into(image_avatar);
-            user1 = myDatabase.getUserByName(name);
-            if (myDatabase.countSize() == 0 || user1 == null) {
+            user1 = myUserSQLiteHelper.getUserByName(name);
+            if (myUserSQLiteHelper.countSize() == 0 || user1 == null) {
                 addUserToDatabase(name);
-            } else if (myDatabase.countSize() > 0 && myDatabase.getUserByName(name) != null) {
+            } else if (myUserSQLiteHelper.countSize() > 0 && myUserSQLiteHelper.getUserByName(name) != null) {
                 if (name.equals(user1.getUser_name())) {
                     txt_score.setText(user1.getHigh_score() + "");
                     hint = user1.getHint();
@@ -192,7 +217,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             goLoginScreen();
         }
-        animationClockwise = AnimationUtils.loadAnimation(this,R.anim.anim_setting);
+    }
+
+    private void showDialogOption() {
+        animationClockwise = AnimationUtils.loadAnimation(this, R.anim.anim_setting);
         btn_option.setAnimation(animationClockwise);
         btn_option.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,49 +252,9 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
 
-        btn_play = (Button) findViewById(R.id.button_play);
-        btn_play.setAnimation(animationZoom);
-        btn_play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (btn_USUK.getVisibility() == View.INVISIBLE) {
-                    btn_VN.setVisibility(View.VISIBLE);
-                    btn_USUK.setVisibility(View.VISIBLE);
-                    btn_VN.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (!checkInternet.isConnected()) {
-                                showDialogInternet();
-                            } else {
-                                if (length != 0) {
-                                    goPlayPage("VietNam");
-                                }
-                            }
-                        }
-                    });
-                    btn_USUK.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (!checkInternet.isConnected()) {
-                                showDialogInternet();
-                            } else {
-                                if (length != 0) {
-                                    goPlayPage("US-UK");
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    btn_VN.setVisibility(View.INVISIBLE);
-                    btn_USUK.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-        pressBackToast = Toast.makeText(getApplicationContext(), "press_back_again_to_exit",
-                Toast.LENGTH_SHORT);
-
+    private void showDialogAddHint() {
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_zoom);
         btn_addIdea.setAnimation(animation);
         btn_addIdea.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                             user1.setHigh_score(Integer.parseInt(String.valueOf(txt_score.getText())));
                             hint += 1;
                             user1.setHint(hint);
-                            myDatabase.updateData(user1);
+                            myUserSQLiteHelper.updateData(user1);
                             startActivity(new Intent(getApplicationContext(), FullAdsActivity.class));
                         }
                     });
@@ -307,24 +295,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void goPlayPage(String s) {
         User user2 = new User();
-        user2 = myDatabase.getUserByName(user.getDisplayName());
+        user2 = myUserSQLiteHelper.getUserByName(user.getDisplayName());
         Intent intent = new Intent(MainActivity.this, PlayPage.class);
         Bundle bundle = new Bundle();
         bundle.putString("user_name", user2.getUser_name());
         bundle.putString("type", s);
         bundle.putString("uriUser", String.valueOf(uriUser));
         if (s.equals("VietNam")) {
-            bundle.putInt("length", question_length_VietNam);
+            bundle.putInt("numberOfAllQuestion", question_length_VietNam);
         } else if (s.equals("US-UK")) {
-            bundle.putInt("length", question_length_USUK);
+            bundle.putInt("numberOfAllQuestion", question_length_USUK);
         }
         bundle.putInt("high_score", user2.getHigh_score());
         intent.putExtra("myUser", bundle);
         startActivity(intent);
         mediaPlayer.stop();
         finish();
-
-
     }
 
 
@@ -332,12 +318,53 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Kiểm tra Internet", Toast.LENGTH_LONG).show();
     }
 
+    private void clickBtn_play() {
+        btn_play = (Button) findViewById(R.id.button_play);
+        btn_play.setAnimation(animationZoom);
+        btn_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btn_USUK.getVisibility() == View.INVISIBLE) {
+                    btn_VN.setVisibility(View.VISIBLE);
+                    btn_USUK.setVisibility(View.VISIBLE);
+                    btn_VN.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!checkInternet.isConnected()) {
+                                showDialogInternet();
+                            } else {
+                                if (numberOfAllQuestion != 0) {
+                                    goPlayPage("VietNam");
+                                }
+                            }
+                        }
+                    });
+                    btn_USUK.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!checkInternet.isConnected()) {
+                                showDialogInternet();
+                            } else {
+                                if (numberOfAllQuestion != 0) {
+                                    goPlayPage("US-UK");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    btn_VN.setVisibility(View.INVISIBLE);
+                    btn_USUK.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+    }
+
     private void addUserToDatabase(String name) {
         User user = new User();
         user.setHigh_score(score);
         user.setHint(hint);
         user.setUser_name(name);
-        Boolean addSuccess = myDatabase.insertData(user);
+        Boolean addSuccess = myUserSQLiteHelper.insertData(user);
         if (addSuccess) {
             Toast.makeText(this, "Thêm tài khoản thành công", Toast.LENGTH_LONG).show();
 
@@ -373,9 +400,7 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             System.out.println("Load ads");
-
             AdRequest adRequest = new AdRequest.Builder().build();
             adBanner.loadAd(adRequest);
             adBanner.setAdListener(new AdListener() {

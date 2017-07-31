@@ -37,52 +37,43 @@ import com.squareup.picasso.Picasso;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Question;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.User;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.R;
-import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Database;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.data.UserSQLiteHelper;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 public class PlayPage extends AppCompatActivity {
 
+    //
     private ImageView img_music;
-    private Animation anim_rotate;
-    Animation anim_fade;
+    private Animation anim_rotate, anim_fade;
     private DatabaseReference mData;
-    private TextView txt_question;
+    private TextView txt_question, txt_score;
+    private LinearLayout linearLayoutChoose, linearLayoutAnswer;
+    private Button btn_idea;
+    private ObjectAnimator animator;
+    private ProgressBar progressBar;
+    private MediaPlayer mediaPlayer, mediaChoose, mediaGameOver;
+    //
     private String urlPath = "gs://trochoiamnhac-b9165.appspot.com/audio/";
     private ProgressDialog progressDialog;
     private FirebaseStorage storage;
-    private MediaPlayer mediaPlayer;
-    private MediaPlayer mediaChoose;
-    private MediaPlayer mediaGameOver;
     private List<Integer> oldQuestionIndex = new LinkedList<>();
     private List<Integer> oldChoiceButton = new LinkedList<>();
     private List<Integer> oldHint = new LinkedList<>();
     private int currentQuestionIndex;
     private Random random = new Random();
-    private String answerChoose = null;
-    private String reAnswer = null;
-    private Button[] btn_choice;
+    private String answerChoose = null, reAnswer = null;
+    private Button[] btn_choice, btn_answer;
     private String[] lineAnswer;
-    private LinearLayout linearLayout;
-    private LinearLayout linearLayoutAnswer;
-    private Button[] btn_answer;
-    private byte countAnswer = 0;
-    private int countHint;
-    private byte countChoose;
-    private byte countQuestion = 0;
-    private int countScore = 0;
-    private Button btn_idea;
+    private int countHint, high_score, question_length;
+    private byte countChoose, countQuestion = 0, countFail, countAnswer = 0, countScore = 0;
     private Random r = new Random();
     private String user_name;
-    private TextView txt_score;
-    private Database myDatabase;
-    private int high_score;
+    private UserSQLiteHelper myUserSQLiteHelper;
     private User user;
-    private ObjectAnimator animator;
-    private ProgressBar progressBar;
-    int question_length;
-    private long Remimingtime = 0;
+    private long remimingtime = 0;
     private String typePlay;
     private boolean isPause = false;
     private boolean isCancel = false;
@@ -91,7 +82,6 @@ public class PlayPage extends AppCompatActivity {
     private long mLastBackPress;
     private static final long mBackPressThreshold = 3500;
     private CountDownTimer timer;
-    private byte countFail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,51 +89,22 @@ public class PlayPage extends AppCompatActivity {
         setTheme(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         setContentView(R.layout.activity_play_page);
 
+        //random color background
         View view = findViewById(R.id.activity_play_page);
         int[] androidColors = getResources().getIntArray(R.array.androidcolors);
         int randomColor = androidColors[new Random().nextInt(androidColors.length)];
         view.setBackgroundColor(randomColor);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        txt_score = (TextView) findViewById(R.id.textScore);
-        btn_idea = (Button) findViewById(R.id.btn_idea);
-        txt_question = (TextView) findViewById(R.id.txt_question);
-        img_music = (ImageView) findViewById(R.id.musicPlaying);
-        anim_rotate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
-        anim_fade = AnimationUtils.loadAnimation(this, R.anim.anim_fade);
-        animator = ObjectAnimator.ofInt(progressBar, "progress", 0, 2100);
-        animator.setDuration(21000);
-        animator.setInterpolator(new DecelerateInterpolator());
-        myDatabase = new Database(this);
-        storage = FirebaseStorage.getInstance();
-        mData = FirebaseDatabase.getInstance().getReference();
+        init();
         //get user from Main
-        Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("myUser");
-        user_name = bundle.getString("user_name");
-        high_score = bundle.getInt("high_score");
-        countHint = myDatabase.getUserByName(user_name).getHint();
-        typePlay = bundle.getString("type");
-        Log.d("type", typePlay);
-        question_length = bundle.getInt("length");
-        uri = Uri.parse(bundle.getString("uriUser"));
-        btn_idea.setText(String.valueOf(countHint));
-        user = new User(user_name, countHint, high_score);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(R.style.AppTheme);
-        progressDialog.setMessage("Loading....");
-        progressDialog.show();
-        if (typePlay.equals("VietNam")) {
-            urlPath = urlPath + "Vietnam/";
-        } else {
-            urlPath = urlPath + "US-UK/";
-        }
+        getUser();
+        initProgessdialog();
         //Set Back Click
         pressBackToast = Toast.makeText(getApplicationContext(), "press_back_again_to_exit",
                 Toast.LENGTH_SHORT);
-
         //get data
         InitializeQuizData(randomQuestion());
-
+        // show hint
+        btnIdea_Click();
     }
 
     private void InitializeQuizData(final int current) {
@@ -176,13 +137,13 @@ public class PlayPage extends AppCompatActivity {
                                     if (isPause || isCancel) {
                                         cancel();
                                     } else {
-                                        Remimingtime = l;
+                                        remimingtime = l;
                                     }
                                 }
 
                                 @Override
                                 public void onFinish() {
-                                    Remimingtime = 0;
+                                    remimingtime = 0;
                                     goPageResult("Lose");
                                 }
                             }.start();
@@ -200,31 +161,115 @@ public class PlayPage extends AppCompatActivity {
         });
     }
 
+    private void init() {
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        txt_score = (TextView) findViewById(R.id.textScore);
+        btn_idea = (Button) findViewById(R.id.btn_idea);
+        txt_question = (TextView) findViewById(R.id.txt_question);
+        img_music = (ImageView) findViewById(R.id.musicPlaying);
+        anim_rotate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
+        anim_fade = AnimationUtils.loadAnimation(this, R.anim.anim_fade);
+        animator = ObjectAnimator.ofInt(progressBar, "progress", 0, 2100);
+        animator.setDuration(21000);
+        animator.setInterpolator(new DecelerateInterpolator());
+        myUserSQLiteHelper = new UserSQLiteHelper(this);
+        storage = FirebaseStorage.getInstance();
+        mData = FirebaseDatabase.getInstance().getReference();
+
+    }
+
+    private void getUser() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("myUser");
+        user_name = bundle.getString("user_name");
+        high_score = bundle.getInt("high_score");
+        countHint = myUserSQLiteHelper.getUserByName(user_name).getHint();
+        typePlay = bundle.getString("type");
+        question_length = bundle.getInt("numberOfAllQuestion");
+        uri = Uri.parse(bundle.getString("uriUser"));
+        btn_idea.setText(String.valueOf(countHint));
+        user = new User(user_name, countHint, high_score);
+
+        if (typePlay.equals("VietNam")) {
+            urlPath = urlPath + "Vietnam/";
+        } else {
+            urlPath = urlPath + "US-UK/";
+        }
+    }
+
+    private void initProgessdialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(R.style.AppTheme);
+        progressDialog.setMessage("Loading....");
+        progressDialog.show();
+    }
 
     private void CustomButton(Question question) {
         if (question != null) {
-            lineAnswer = question.getAnswer().split("\\s");
+            lineAnswer = question.getAnswer().split("\\s"); // split string answer
             btn_choice = new Button[lineAnswer.length];
             btn_answer = new Button[lineAnswer.length];
-
             linearLayoutAnswer = (LinearLayout) findViewById(R.id.linearLayout_answer);
-            linearLayout = (LinearLayout) findViewById(R.id.linearLayout_btn_answer);
+            linearLayoutChoose = (LinearLayout) findViewById(R.id.linearLayout_choose);
             linearLayoutAnswer.setWeightSum(lineAnswer.length);
-            linearLayout.setWeightSum(lineAnswer.length);
+            linearLayoutChoose.setWeightSum(lineAnswer.length);
             randomButton();
             Log.d("lengthAnswer", String.valueOf(lineAnswer.length));
             countChoose = 0;
             countFail = 0;
-            mediaChoose = MediaPlayer.create(this,R.raw.button16);
+            mediaChoose = MediaPlayer.create(this, R.raw.button16);
             for (int j = 0; j < lineAnswer.length; j++) {
                 Log.d("lineAnswer", lineAnswer[j].toString());
-                btn_Choice_Click(j);
-                btn_Answer_Click(j);
-                linearLayout.addView(btn_choice[j]);
+                btnChoice_Click(j);
+                btnAnswer_Click(j);
+                linearLayoutChoose.addView(btn_choice[j]);
                 linearLayoutAnswer.addView(btn_answer[j]);
             }
         }
 
+
+    }
+
+    private void btnChoice_Click(final int index) {
+        btn_choice[index] = new Button(this);
+        btn_choice[index].setText(lineAnswer[oldChoiceButton.get(index)].toString());
+        btn_choice[index].setTextSize(20);
+        btn_choice[index].setBackground(getResources().getDrawable(R.drawable.boder_button));
+        btn_choice[index].setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        LinearLayout.MarginLayoutParams params = (LinearLayout.MarginLayoutParams) btn_choice[index].getLayoutParams();
+        params.setMargins(100, 0, 100, 10);
+        btn_choice[index].setLayoutParams(params);
+        btn_choice[index].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mediaPlayer.isPlaying()) {
+                    if (btn_choice[index].getText().toString() != null) {
+                        answerChoose = String.valueOf(btn_choice[index].getText());
+                        mediaChoose.start();
+                        for (int k = 0; k < lineAnswer.length; k++) {
+                            if (answerChoose != null) {
+                                if (btn_answer[k].getText() == "") {
+                                    btn_answer[k].setText(answerChoose);
+                                    countChoose++;
+                                    Log.d("countChoose", String.valueOf(countChoose));
+                                    checkAnswer(k);
+                                    break;
+                                }
+                            }
+                        }
+                        if (countAnswer < lineAnswer.length) {
+                            btn_choice[index].setVisibility(View.INVISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
+
+    }
+
+    private void btnIdea_Click() {
         btn_idea.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NewApi")
             @Override
@@ -266,53 +311,13 @@ public class PlayPage extends AppCompatActivity {
                     builder.show();
                     user.setHint(countHint);
                     user.setHigh_score(high_score);
-                    myDatabase.updateData(user);
+                    myUserSQLiteHelper.updateData(user);
                     btn_idea.setText(String.valueOf(countHint));
                 } else {
                     Toast.makeText(getApplicationContext(), "Đã hết sô lần gợi ý", Toast.LENGTH_LONG).show();
                 }
             }
         });
-
-    }
-
-    private void btn_Choice_Click(final int index) {
-        btn_choice[index] = new Button(this);
-        btn_choice[index].setText(lineAnswer[oldChoiceButton.get(index)].toString());
-        btn_choice[index].setTextSize(20);
-        btn_choice[index].setBackground(getResources().getDrawable(R.drawable.boder_button));
-        btn_choice[index].setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        LinearLayout.MarginLayoutParams params = (LinearLayout.MarginLayoutParams) btn_choice[index].getLayoutParams();
-        params.setMargins(100, 0, 100, 10);
-        btn_choice[index].setLayoutParams(params);
-        btn_choice[index].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaPlayer.isPlaying()) {
-                    if (btn_choice[index].getText().toString() != null) {
-                        answerChoose = String.valueOf(btn_choice[index].getText());
-                        mediaChoose.start();
-                        for (int k = 0; k < lineAnswer.length; k++) {
-                            if (answerChoose != null) {
-                                if (btn_answer[k].getText() == "") {
-                                    btn_answer[k].setText(answerChoose);
-                                    countChoose++;
-                                    Log.d("countChoose", String.valueOf(countChoose));
-                                    checkAnswer(k);
-                                    break;
-                                }
-                            }
-                        }
-                        if (countAnswer < lineAnswer.length) {
-                            btn_choice[index].setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
-            }
-        });
-
-
     }
 
     private int randomQuestion() {
@@ -347,7 +352,7 @@ public class PlayPage extends AppCompatActivity {
         return oldChoiceButton;
     }
 
-    private void btn_Answer_Click(final int index) {
+    private void btnAnswer_Click(final int index) {
         btn_answer[index] = new Button(this);
         btn_answer[index].setBackground(getResources().getDrawable(R.drawable.boder_button_answer));
         btn_answer[index].setTextColor(Color.BLACK);
@@ -391,7 +396,7 @@ public class PlayPage extends AppCompatActivity {
                     isCancel = true;
                     timer.cancel();
                     countAnswer = 0;
-                    linearLayout.removeAllViewsInLayout();
+                    linearLayoutChoose.removeAllViewsInLayout();
                     linearLayoutAnswer.removeAllViewsInLayout();
                     mediaPlayer.stop();
                     if (countQuestion < question_length) {
@@ -399,9 +404,9 @@ public class PlayPage extends AppCompatActivity {
                         if (countScore > high_score) {
                             high_score = countScore;
                             user.setHigh_score(countScore);
-                            myDatabase.updateData(user);
+                            myUserSQLiteHelper.updateData(user);
                         }
-                        if (Remimingtime > 0) {
+                        if (remimingtime > 0) {
                             mediaPlayer.release();
                             InitializeQuizData(randomQuestion());
                         }
@@ -412,11 +417,10 @@ public class PlayPage extends AppCompatActivity {
                     }
                 }
             }
-        }
-        else {
+        } else {
             countFail++;
             if (countChoose == lineAnswer.length && countFail > 0) {
-                Remimingtime = 0;
+                remimingtime = 0;
                 goPageResult("Lose");
             }
         }
@@ -425,13 +429,13 @@ public class PlayPage extends AppCompatActivity {
     private void countDownTimer(int lengthMedia) {
         isCancel = false;
         isPause = false;
-        new CountDownTimer(Remimingtime, 1000) {
+        new CountDownTimer(remimingtime, 1000) {
             @Override
             public void onTick(long l) {
                 if (isPause || isCancel) {
                     cancel();
                 } else {
-                    Remimingtime = l;
+                    remimingtime = l;
                 }
             }
 
@@ -445,7 +449,7 @@ public class PlayPage extends AppCompatActivity {
     }
 
     private void goPageResult(String s) {
-        if (Remimingtime <= 0) {
+        if (remimingtime <= 0) {
             isPause = true;
             isCancel = true;
             mediaPlayer.stop();
