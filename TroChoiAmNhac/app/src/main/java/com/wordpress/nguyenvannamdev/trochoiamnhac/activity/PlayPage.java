@@ -34,8 +34,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
+<<<<<<< HEAD
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Question;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.User;
+=======
+import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.Question;
+import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.User;
+>>>>>>> 2452063f4e321eafc7151f0c831bf7b426c62b1e
 import com.wordpress.nguyenvannamdev.trochoiamnhac.R;
 import com.wordpress.nguyenvannamdev.trochoiamnhac.data.Database;
 

@@ -8,6 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+<<<<<<< HEAD
+=======
+import com.wordpress.nguyenvannamdev.trochoiamnhac.firebaseService.User;
+
+>>>>>>> 2452063f4e321eafc7151f0c831bf7b426c62b1e
 /**
  * Created by NAM COI on 2/25/2017.
  */
